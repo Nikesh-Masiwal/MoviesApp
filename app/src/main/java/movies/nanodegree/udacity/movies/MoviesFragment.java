@@ -3,18 +3,18 @@ package movies.nanodegree.udacity.movies;
 import android.content.Context;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
@@ -31,24 +31,32 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
+import java.util.ArrayList;
+
+import movies.nanodegree.udacity.movies.adapter.ImageAdapter;
 
 
-public class Home extends ActionBarActivity implements AdapterView.OnItemClickListener {
-
-    private final String LOG_TAG = Home.class.getSimpleName();
+/**
+ * A placeholder fragment containing a simple view.
+ */
+public class MoviesFragment extends Fragment implements AdapterView.OnItemClickListener {
 
     private GridView mGridView;
     private GridAdapter mAdapter;
 
+    public MoviesFragment() {
+    }
+
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_home);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+
+        View rootView = inflater.inflate(R.layout.fragment_home, container, false);
 
 
         //Defining ArrayAdapter
-        mGridView = (GridView) findViewById(R.id.grid);
-        mGridView.setOnItemClickListener(this);
+        mGridView = (GridView) rootView.findViewById(R.id.grid);
+        mGridView.setOnItemClickListener(MoviesFragment.this);
 
 
 
@@ -56,38 +64,14 @@ public class Home extends ActionBarActivity implements AdapterView.OnItemClickLi
         fetchMoviesPoster.execute();
 
 
-
-//        FetchMoviesPoster fetchMoviesPoster = new FetchMoviesPoster();
-//        fetchMoviesPoster.execute();
-    }
-
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.home, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
+        return inflater.inflate(R.layout.fragment_home, container, false);
     }
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
     }
+
 
     public class FetchMoviesPoster extends AsyncTask<Void,String[],String[]>{
 
@@ -241,10 +225,12 @@ public class Home extends ActionBarActivity implements AdapterView.OnItemClickLi
         protected void onPostExecute(String[] result) {
             super.onPostExecute(result);
 
+            mAdapter = new GridAdapter(result);
+            mGridView.setAdapter(mAdapter);
 
             if (result != null) {
 
-                Toast.makeText(getBaseContext(),"Done Loading",Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(),"Done Loading",Toast.LENGTH_SHORT).show();
 
 
                 mAdapter = new GridAdapter(result);
@@ -290,7 +276,7 @@ public class Home extends ActionBarActivity implements AdapterView.OnItemClickLi
 
             Log.d("Count","GetView");
             if (view == null) {
-                final LayoutInflater inflater = (LayoutInflater) getBaseContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                final LayoutInflater inflater = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
                 view = inflater.inflate(R.layout.list_item_gridview, viewGroup, false);
             }
 
@@ -308,4 +294,11 @@ public class Home extends ActionBarActivity implements AdapterView.OnItemClickLi
         }
     }
 
+
 }
+
+
+
+
+
+
