@@ -39,13 +39,17 @@ import movies.nanodegree.udacity.movies.adapter.ImageAdapter;
 /**
  * A placeholder fragment containing a simple view.
  */
-public class MoviesFragment extends Fragment implements AdapterView.OnItemClickListener {
+public class MoviesFragment extends android.app.Fragment implements AdapterView.OnItemClickListener {
 
     private GridView mGridView;
-    private GridAdapter mAdapter;
+    private ImageAdapter mAdapter;
+
+    Context ctx;
 
     public MoviesFragment() {
     }
+
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -53,13 +57,8 @@ public class MoviesFragment extends Fragment implements AdapterView.OnItemClickL
 
         View rootView = inflater.inflate(R.layout.fragment_home, container, false);
 
-
-        //Defining ArrayAdapter
         mGridView = (GridView) rootView.findViewById(R.id.grid);
-        mGridView.setOnItemClickListener(MoviesFragment.this);
-
-
-
+       // mGridView.setOnItemClickListener(getActivity());
         FetchMoviesPoster fetchMoviesPoster = new FetchMoviesPoster();
         fetchMoviesPoster.execute();
 
@@ -68,8 +67,34 @@ public class MoviesFragment extends Fragment implements AdapterView.OnItemClickL
     }
 
     @Override
-    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
 
+        //getActivity().setContentView(R.layout.fragment_home);
+
+
+
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        //Defining ArrayAdapter
+
+        //mGridView.setOnItemClickListener(MoviesFragment.this);
+//        mGridView = (GridView) getActivity().findViewById(R.id.grid);
+//        FetchMoviesPoster fetchMoviesPoster = new FetchMoviesPoster();
+//        fetchMoviesPoster.execute();
+
+
+
+
+    }
+
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        Toast.makeText(getActivity(),"Position "+position,Toast.LENGTH_SHORT).show();
     }
 
 
@@ -112,7 +137,7 @@ public class MoviesFragment extends Fragment implements AdapterView.OnItemClickL
                 description = movie.getString(MJSN_OVERVIEW);
                 poster_path = movie.getString(MJSN_POSTER_PATH);
 
-                poster_path = "http://image.tmdb.org/t/p/w185/"+poster_path;
+                poster_path = "http://image.tmdb.org/t/p/w342/"+poster_path;
 
                 imagePosters[i] = poster_path;
 
@@ -225,16 +250,17 @@ public class MoviesFragment extends Fragment implements AdapterView.OnItemClickL
         protected void onPostExecute(String[] result) {
             super.onPostExecute(result);
 
-            mAdapter = new GridAdapter(result);
-            mGridView.setAdapter(mAdapter);
 
             if (result != null) {
 
                 Toast.makeText(getActivity(),"Done Loading",Toast.LENGTH_SHORT).show();
 
 
-                mAdapter = new GridAdapter(result);
+                mAdapter = new ImageAdapter(getActivity(),result);
+
                 mGridView.setAdapter(mAdapter);
+
+
 
 
             }
@@ -248,16 +274,18 @@ public class MoviesFragment extends Fragment implements AdapterView.OnItemClickL
     private class GridAdapter extends BaseAdapter {
 
         String[] moviesList;
+        Context context;
 
-        public GridAdapter(String[] movies) {
+        public GridAdapter(Context cxt,String[] movies) {
 
+            this.context = cxt;
             this.moviesList = movies;
         }
 
 
         @Override
         public int getCount() {
-            Log.d("Count","Lenght"+moviesList.length);
+            Log.d("Get count","Lenght"+moviesList.length);
             return moviesList.length;
         }
 
@@ -274,12 +302,13 @@ public class MoviesFragment extends Fragment implements AdapterView.OnItemClickL
         @Override
         public View getView(int position, View view, ViewGroup viewGroup) {
 
-            Log.d("Count","GetView");
+
             if (view == null) {
-                final LayoutInflater inflater = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                Log.d("Get View","View Null");
+                LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
                 view = inflater.inflate(R.layout.list_item_gridview, viewGroup, false);
             }
-
+            Log.d("Get View","Not Null");
             //final Item item = getItem(position);
 
             // Load the thumbnail image

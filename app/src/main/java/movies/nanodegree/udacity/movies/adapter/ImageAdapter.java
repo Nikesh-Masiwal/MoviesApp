@@ -19,6 +19,11 @@ public class ImageAdapter extends BaseAdapter {
 
     private final String LOG_TAG = ImageAdapter.class.getSimpleName();
 
+    @Override
+    public void notifyDataSetChanged() {
+        super.notifyDataSetChanged();
+    }
+
 
     private Context context;
     String[] movie;
@@ -26,7 +31,6 @@ public class ImageAdapter extends BaseAdapter {
     public ImageAdapter(Context context, String[] mobileValues) {
         this.context = context;
 
-        Log.d(LOG_TAG,"Initialized "+movie.length);
 
         this.movie = new String[mobileValues.length];
         movie = mobileValues;
@@ -34,24 +38,25 @@ public class ImageAdapter extends BaseAdapter {
 
     @Override
     public boolean isEmpty() {
-        Log.d(LOG_TAG,"EMPTY "+movie.length);
+
         return super.isEmpty();
     }
 
     public View getView(int position, View convertView, ViewGroup parent) {
 
-        LayoutInflater inflater = (LayoutInflater) context
-                .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
-        Log.d(LOG_TAG,"Just Entered  "+movie[position]);
+
 
         View gridView;
 
         if (convertView == null) {
 
-            Log.d(LOG_TAG,"Here  "+movie[position]);
+
 
             gridView = new View(context);
+
+            LayoutInflater inflater = (LayoutInflater) context
+                    .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
             // get layout from mobile.xml
             gridView = inflater.inflate(R.layout.list_item_gridview, null);
@@ -71,17 +76,21 @@ public class ImageAdapter extends BaseAdapter {
 
             Picasso.with(context).load(url).into(imageView);
 
+            return gridView;
+
         } else {
-            Log.d(LOG_TAG,"Or Here  "+movie[position]);
+
             gridView = (View) convertView;
+
+            return gridView;
         }
 
-        return gridView;
+
     }
 
     @Override
     public int getCount() {
-        Log.d(LOG_TAG,"Length "+movie.length);
+
         return movie.length;
     }
 
@@ -92,7 +101,7 @@ public class ImageAdapter extends BaseAdapter {
 
     @Override
     public long getItemId(int position) {
-        return 0;
+        return position;
     }
 
 

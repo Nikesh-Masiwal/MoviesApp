@@ -1,5 +1,6 @@
 package movies.nanodegree.udacity.movies;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -32,13 +33,16 @@ import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
 
+import movies.nanodegree.udacity.movies.adapter.ImageAdapter;
+
 
 public class Home extends ActionBarActivity implements AdapterView.OnItemClickListener {
 
     private final String LOG_TAG = Home.class.getSimpleName();
 
     private GridView mGridView;
-    private GridAdapter mAdapter;
+    private ImageAdapter mAdapter;
+    ProgressDialog progress;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,6 +57,8 @@ public class Home extends ActionBarActivity implements AdapterView.OnItemClickLi
 
 
         FetchMoviesPoster fetchMoviesPoster = new FetchMoviesPoster();
+        progress = ProgressDialog.show(this, "Fetching Movies",
+                "Grab a Popcorn, We are fetching Movies for you.", true);
         fetchMoviesPoster.execute();
 
 
@@ -86,7 +92,7 @@ public class Home extends ActionBarActivity implements AdapterView.OnItemClickLi
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
+        Toast.makeText(getBaseContext(),"Position "+position,Toast.LENGTH_SHORT).show();
     }
 
     public class FetchMoviesPoster extends AsyncTask<Void,String[],String[]>{
@@ -128,11 +134,11 @@ public class Home extends ActionBarActivity implements AdapterView.OnItemClickLi
                 description = movie.getString(MJSN_OVERVIEW);
                 poster_path = movie.getString(MJSN_POSTER_PATH);
 
-                poster_path = "http://image.tmdb.org/t/p/w185/"+poster_path;
+                poster_path = "http://image.tmdb.org/t/p/w342/"+poster_path;
 
                 imagePosters[i] = poster_path;
 
-                Log.d(LOG_TAG,"Movie : "+movie_title+" Description : "+description+" Path "+poster_path);
+
 
             }
 
@@ -241,71 +247,21 @@ public class Home extends ActionBarActivity implements AdapterView.OnItemClickLi
         protected void onPostExecute(String[] result) {
             super.onPostExecute(result);
 
-
+            progress.dismiss();
             if (result != null) {
 
-                Toast.makeText(getBaseContext(),"Done Loading",Toast.LENGTH_SHORT).show();
 
-
-                mAdapter = new GridAdapter(result);
+                mAdapter = new ImageAdapter(getBaseContext(),result);
                 mGridView.setAdapter(mAdapter);
 
 
+            }else
+            {
+                Toast.makeText(getBaseContext(),"Error Fetching Movie",Toast.LENGTH_LONG).show();
             }
 
         }
     }
 
-    /**
-     * {@link android.widget.BaseAdapter} which displays items.
-     */
-    private class GridAdapter extends BaseAdapter {
-
-        String[] moviesList;
-
-        public GridAdapter(String[] movies) {
-
-            this.moviesList = movies;
-        }
-
-
-        @Override
-        public int getCount() {
-            Log.d("Count","Lenght"+moviesList.length);
-            return moviesList.length;
-        }
-
-        @Override
-        public String getItem(int position) {
-            return moviesList[position];
-        }
-
-        @Override
-        public long getItemId(int position) {
-            return 0;
-        }
-
-        @Override
-        public View getView(int position, View view, ViewGroup viewGroup) {
-
-            Log.d("Count","GetView");
-            if (view == null) {
-                final LayoutInflater inflater = (LayoutInflater) getBaseContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-                view = inflater.inflate(R.layout.list_item_gridview, viewGroup, false);
-            }
-
-            //final Item item = getItem(position);
-
-            // Load the thumbnail image
-            ImageView image = (ImageView) view.findViewById(R.id.imageview_item);
-            Picasso.with(image.getContext()).load(getItem(position)).into(image);
-
-            // Set the TextView's contents
-//            TextView name = (TextView) view.findViewById(R.id.textview_name);
-//            name.setText(item.getName());
-
-            return view;
-        }
-    }
 
 }
