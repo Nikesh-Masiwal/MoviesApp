@@ -2,6 +2,7 @@ package movies.nanodegree.udacity.movies;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.support.v7.app.ActionBarActivity;
@@ -48,6 +49,11 @@ public class Home extends ActionBarActivity implements AdapterView.OnItemClickLi
 
     ArrayList<HashMap<String, String>> MoviesList = new ArrayList<HashMap<String, String>>();
 
+    HashMap<String, String> moviesMap;
+    String title,description,backdrop_path,vote_avg,total_votes,releasedate;
+
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -93,9 +99,25 @@ public class Home extends ActionBarActivity implements AdapterView.OnItemClickLi
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
+        moviesMap = MoviesList.get(position);
+
+         title = moviesMap.get(MovieConstants.MovieHashMapKeys.M_TITLE);
+         description = moviesMap.get(MovieConstants.MovieHashMapKeys.M_DESCRIPTION);
+         backdrop_path = moviesMap.get(MovieConstants.MovieHashMapKeys.M_BACKDROP_PATH);
+         vote_avg = moviesMap.get(MovieConstants.MovieHashMapKeys.M_AVG_VOTES);
+         total_votes = moviesMap.get(MovieConstants.MovieHashMapKeys.M_VOTES_COUNT);
+         releasedate = moviesMap.get(MovieConstants.MovieHashMapKeys.M_RELEASE_DATE);
 
 
-        Toast.makeText(getBaseContext(),"Position "+position,Toast.LENGTH_SHORT).show();
+        Intent intent = new Intent(Home.this, MovieDetail.class);
+        intent.putExtra("title", title);
+        intent.putExtra("description", description);
+        intent.putExtra("backdrop_path", backdrop_path);
+        intent.putExtra("vote_avg", vote_avg);
+        intent.putExtra("total_votes", total_votes);
+        intent.putExtra("releasedate", releasedate);
+
+        startActivity(intent);
     }
 
     public class FetchMoviesPoster extends AsyncTask<Void,String[],String[]>{
