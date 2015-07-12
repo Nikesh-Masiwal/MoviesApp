@@ -3,8 +3,10 @@ package movies.nanodegree.udacity.movies;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -66,10 +68,25 @@ public class Home extends ActionBarActivity implements AdapterView.OnItemClickLi
 
 
 
+    }
+
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        updateMovies();
+    }
+
+    public void updateMovies(){
+
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+        String populated_movie_by = prefs.getString(getString(R.string.pref_sorting_key),
+                getString(R.string.sort_default));
+
         FetchMoviesPoster fetchMoviesPoster = new FetchMoviesPoster();
         progress = ProgressDialog.show(this, "Fetching Movies",
                 "Grab a Popcorn, We are fetching Movies for you.", true);
-        fetchMoviesPoster.execute();
+        fetchMoviesPoster.execute(populated_movie_by);
 
     }
 
@@ -90,6 +107,8 @@ public class Home extends ActionBarActivity implements AdapterView.OnItemClickLi
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+            Intent settingIntent = new Intent(Home.this,SettingsActivity.class);
+            startActivity(settingIntent);
             return true;
         }
 
@@ -120,7 +139,7 @@ public class Home extends ActionBarActivity implements AdapterView.OnItemClickLi
         startActivity(intent);
     }
 
-    public class FetchMoviesPoster extends AsyncTask<Void,String[],String[]>{
+    public class FetchMoviesPoster extends AsyncTask<String,String[],String[]>{
 
         private final String LOG_TAG = FetchMoviesPoster.class.getSimpleName();
 
@@ -185,7 +204,7 @@ public class Home extends ActionBarActivity implements AdapterView.OnItemClickLi
                 //String Array of Poster
                 imagePosters[i] = poster_path;
 
-                Log.v(LOG_TAG,"Movies Array "+imagePosters[i]);
+
 
             }
 
@@ -196,7 +215,7 @@ public class Home extends ActionBarActivity implements AdapterView.OnItemClickLi
 
 
         @Override
-        protected String[] doInBackground(Void... params) {
+        protected String[] doInBackground(String... params) {
 
 
             // These two need to be declared outside the try/catch
@@ -211,16 +230,30 @@ public class Home extends ActionBarActivity implements AdapterView.OnItemClickLi
 
             //Construct Base URL and URI
             //final String FORECAST_BASE_URL = "http://private-795ef-themoviedb.apiary-mock.com/3/discover/movie?";
+            String populate_by;
+            String BASE_URL_TO_POPULATE_BY;
+            if (params.length != 0)
+            {
+                populate_by = params[0];
+            }else {
+                populate_by = "popular";
+            }
+
+            if (populate_by.equalsIgnoreCase("popular")){
+                BASE_URL_TO_POPULATE_BY  = MovieConstants.TMDb.POPULAR_MOVIE_BASE_URL;
+            }else {
+                BASE_URL_TO_POPULATE_BY  = MovieConstants.TMDb.TOPRATED_MOVIE_BASE_URL;
+            }
 
 
             final String API_PARAM = "api_key";
             final String PAGE_PARAM = "page";
 
-            Uri builtUri = Uri.parse(MovieConstants.TMDb.MOVIE_BASE_URL).buildUpon()
+            Uri builtUri = Uri.parse(BASE_URL_TO_POPULATE_BY).buildUpon()
                     .appendQueryParameter(API_PARAM, MovieConstants.TMDb.API_KEY_MOVIEDB)
                     .appendQueryParameter(PAGE_PARAM, "1")
                     .build();
-            Log.v(LOG_TAG, "Url " + builtUri);
+           // Log.v(LOG_TAG, "Url " + builtUri);
 
 
             URL url = null;
@@ -295,7 +328,6 @@ public class Home extends ActionBarActivity implements AdapterView.OnItemClickLi
 
             progress.dismiss();
             if (result != null) {
-
 
                 mAdapter = new ImageAdapter(getBaseContext(),result);
                 mGridView.setAdapter(mAdapter);

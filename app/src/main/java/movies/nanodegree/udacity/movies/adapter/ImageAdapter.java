@@ -61,29 +61,25 @@ public class ImageAdapter extends BaseAdapter {
             // get layout from mobile.xml
             gridView = inflater.inflate(R.layout.list_item_gridview, null);
 
-            // set value into textview
-//            TextView textView = (TextView) gridView
-//                    .findViewById(R.id.grid_item_label);
-//            textView.setText(moviesValue[position]);
-
-            // set image based on selected text
-            ImageView imageView = (ImageView) gridView
-                    .findViewById(R.id.imageview_item);
-
-            String mobile = movie[position];
-
-            String url = (String) getItem(position);
-
-            Picasso.with(context).load(url).into(imageView);
-
-            return gridView;
 
         } else {
-
+            gridView = new View(context);
             gridView = (View) convertView;
 
-            return gridView;
+
         }
+
+        // set image based on selected text
+        ImageView imageView = (ImageView) gridView
+                .findViewById(R.id.imageview_item);
+
+        String mobile = movie[position];
+
+        String url = (String) getItem(position);
+
+        Picasso.with(context).load(url).into(imageView);
+
+        return gridView;
 
 
     }
