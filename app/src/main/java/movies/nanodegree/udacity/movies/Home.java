@@ -32,6 +32,8 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 import movies.nanodegree.udacity.movies.adapter.ImageAdapter;
 
@@ -43,6 +45,8 @@ public class Home extends ActionBarActivity implements AdapterView.OnItemClickLi
     private GridView mGridView;
     private ImageAdapter mAdapter;
     ProgressDialog progress;
+
+    ArrayList<HashMap<String, String>> MoviesList = new ArrayList<HashMap<String, String>>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,10 +65,6 @@ public class Home extends ActionBarActivity implements AdapterView.OnItemClickLi
                 "Grab a Popcorn, We are fetching Movies for you.", true);
         fetchMoviesPoster.execute();
 
-
-
-//        FetchMoviesPoster fetchMoviesPoster = new FetchMoviesPoster();
-//        fetchMoviesPoster.execute();
     }
 
 
@@ -92,53 +92,78 @@ public class Home extends ActionBarActivity implements AdapterView.OnItemClickLi
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+
+
         Toast.makeText(getBaseContext(),"Position "+position,Toast.LENGTH_SHORT).show();
     }
 
     public class FetchMoviesPoster extends AsyncTask<Void,String[],String[]>{
 
         private final String LOG_TAG = FetchMoviesPoster.class.getSimpleName();
-        private final String API_KEY_MOVIEDB = "59f4a7727c4d04f1e3138fd764cbe60e";
+
 
 
         private String[] getMoviesDataFromJson(String movieJson)
                 throws JSONException {
 
-            // These are the names of the JSON objects that need to be extracted.
-            final String MJSN_RESULT = "results";
-            final String MJSN_ORGTITLE = "original_title";
-            final String MJSN_OVERVIEW = "overview";
-            final String MJSN_TITLE = "title";
-            final String MJSN_POSTER_PATH = "poster_path";
-            final String MJSN_VOTE_RATE = "vote_average";
-            final String MJSN_RELEASE_DATE = "release_date";
-            final String MJSN_ACKDROP_PATH = "backdrop_path";
+
 
             JSONObject moviesJsonResult = new JSONObject(movieJson);
-            JSONArray moviesArray = moviesJsonResult.getJSONArray(MJSN_RESULT);
+            JSONArray moviesArray = moviesJsonResult.getJSONArray(MovieConstants.TMDb.MJSN_RESULT);
+
+
+
             String[] imagePosters = new String[moviesArray.length()];
             for(int i = 0; i < moviesArray.length(); i++) {
-                // For now, using the format "Day, description, hi/low"
+                // Defining String to Store Data from Movies JSON
                 String movie_title;
                 String description;
                 String poster_path;
-                String ratings;
+                String backdrop_path;
+                String vote_average;
+                String vote_count;
+                String release_date;
 
-                // Get the JSON object representing the day
+                // Get the JSON object representing the movie
                 JSONObject movie = moviesArray.getJSONObject(i);
 
-                // The date/time is returned as a long.  We need to convert that
-                // into something human-readable, since most people won't read "1400356800" as
-                // "this saturday".
-                movie_title = movie.getString(MJSN_TITLE);
-                description = movie.getString(MJSN_OVERVIEW);
-                poster_path = movie.getString(MJSN_POSTER_PATH);
+                movie_title = movie.getString(MovieConstants.TMDb.MJSN_TITLE);
+                description = movie.getString(MovieConstants.TMDb.MJSN_OVERVIEW);
+                poster_path = movie.getString(MovieConstants.TMDb.MJSN_POSTER_PATH);
+                //poster_path = MovieConstants.TMDb.IMAGE_BASE_URL+"342"+poster_path;
 
                 poster_path = "http://image.tmdb.org/t/p/w342/"+poster_path;
 
+                backdrop_path = movie.getString(MovieConstants.TMDb.MJSN_BACKDROP_PATH);
+                vote_count = movie.getString(MovieConstants.TMDb.MJSN_VOTE_COUNT);
+
+                vote_average = movie.getString(MovieConstants.TMDb.MJSN_VOTE_RATE);
+
+                release_date = movie.getString(MovieConstants.TMDb.MJSN_RELEASE_DATE);
+
+
+                HashMap<String, String> movie_details = new HashMap<>();
+
+                // Store Each detail as a Hashmap and insert that into a ArrayList
+
+                movie_details.put(MovieConstants.MovieHashMapKeys.M_TITLE,movie_title);
+                movie_details.put(MovieConstants.MovieHashMapKeys.M_DESCRIPTION,description);
+                movie_details.put(MovieConstants.MovieHashMapKeys.M_POSTER_PATH,poster_path);
+                movie_details.put(MovieConstants.MovieHashMapKeys.M_BACKDROP_PATH,backdrop_path);
+                movie_details.put(MovieConstants.MovieHashMapKeys.M_AVG_VOTES,vote_average);
+                movie_details.put(MovieConstants.MovieHashMapKeys.M_VOTES_COUNT,vote_count);
+                movie_details.put(MovieConstants.MovieHashMapKeys.M_RELEASE_DATE,release_date);
+
+
+
+                // Adding to ArrayList
+                MoviesList.add(movie_details);
+
+                //String Array of Poster
                 imagePosters[i] = poster_path;
 
-
+                Log.v(LOG_TAG,"Movies Array "+imagePosters[i]);
 
             }
 
@@ -165,13 +190,12 @@ public class Home extends ActionBarActivity implements AdapterView.OnItemClickLi
             //Construct Base URL and URI
             //final String FORECAST_BASE_URL = "http://private-795ef-themoviedb.apiary-mock.com/3/discover/movie?";
 
-            final String FORECAST_BASE_URL = "http://api.themoviedb.org/3/discover/movie?";
 
             final String API_PARAM = "api_key";
             final String PAGE_PARAM = "page";
 
-            Uri builtUri = Uri.parse(FORECAST_BASE_URL).buildUpon()
-                    .appendQueryParameter(API_PARAM, API_KEY_MOVIEDB)
+            Uri builtUri = Uri.parse(MovieConstants.TMDb.MOVIE_BASE_URL).buildUpon()
+                    .appendQueryParameter(API_PARAM, MovieConstants.TMDb.API_KEY_MOVIEDB)
                     .appendQueryParameter(PAGE_PARAM, "1")
                     .build();
             Log.v(LOG_TAG, "Url " + builtUri);
@@ -184,7 +208,7 @@ public class Home extends ActionBarActivity implements AdapterView.OnItemClickLi
                 e.printStackTrace();
             }
 
-            // Create the request to OpenWeatherMap, and open the connection
+            // Create the request to TMDb, and open the connection
             try {
                 urlConnection = (HttpURLConnection) url.openConnection();
             } catch (IOException e) {
