@@ -1,27 +1,22 @@
 package movies.nanodegree.udacity.movies;
 
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Parcelable;
 import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.BaseAdapter;
 import android.widget.GridView;
-import android.widget.ImageView;
+import android.widget.ListAdapter;
 import android.widget.Toast;
-
-import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -36,6 +31,7 @@ import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 
 import movies.nanodegree.udacity.movies.adapter.ImageAdapter;
@@ -49,40 +45,96 @@ public class Home extends ActionBarActivity implements AdapterView.OnItemClickLi
     private ImageAdapter mAdapter;
     ProgressDialog progress;
 
-    ArrayList<HashMap<String, String>> MoviesList = new ArrayList<HashMap<String, String>>();
+    ArrayList<HashMap<String, String>> moviesList = new ArrayList<HashMap<String, String>>();
 
     HashMap<String, String> moviesMap;
+
+    ArrayList<String> postersArrayList;
     String title,description,backdrop_path,vote_avg,total_votes,releasedate;
 
+    //Boolean to indicate if a api call is needed after Settings Change
+    public static boolean needARefresh;
 
+    //Setter for the Above
+    public void setNeedARefresh(boolean needARefresh) {
+        this.needARefresh = needARefresh;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
-
         //Defining ArrayAdapter
         mGridView = (GridView) findViewById(R.id.grid);
         mGridView.setOnItemClickListener(this);
 
+        //Checnking for SavedInstanceState
+        if(savedInstanceState != null) {
+
+            ArrayList<HashMap<String, String>> List = new ArrayList<HashMap<String, String>>();
+            ArrayList<String> postersAL = new ArrayList<String>();
+
+            //Getting Serialized ArrayList from Bundle
+            List = (ArrayList<HashMap<String, String>>) savedInstanceState.getSerializable("movieListArrayLists");
+
+            //Getting Serialized String array of URLs
+            postersAL = savedInstanceState.getStringArrayList("posters");
+
+            //Experienced a problem of crash on 3 rotation back to back posterArrayList was null, hence..
+            postersArrayList = postersAL;
+
+            //Assigning current ArrayList with Saved.
+            moviesList = List;
+
+            if (postersAL.size() != 0) {
+
+                //Calling the Adapter
+                String[] arrayPosters = postersAL.toArray(new String[postersAL.size()]);
+
+                mAdapter = new ImageAdapter(getBaseContext(), arrayPosters);
+                mGridView.setAdapter(mAdapter);
+            }
 
 
+        }else {
+            //Else Get those movies
+            updateMovies();
+        }
+
+
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+
+        //Saving instance on Rotations
+        outState.putSerializable("movieListArrayLists", moviesList);
+        outState.putStringArrayList("posters", postersArrayList);
+
+        super.onSaveInstanceState(outState);
     }
 
 
     @Override
-    public void onStart() {
+    protected void onStart() {
         super.onStart();
-        updateMovies();
+        //Call update only if needArefresh is chnaged
+        if (needARefresh == true){
+            updateMovies();
+            needARefresh = false;
+        }
+
     }
 
     public void updateMovies(){
 
+        //Getting Shared Pref for Popular/Top Rated Setting
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
         String populated_movie_by = prefs.getString(getString(R.string.pref_sorting_key),
                 getString(R.string.sort_default));
 
+        //Calling Async : TODO : Replace it with Retrofit
         FetchMoviesPoster fetchMoviesPoster = new FetchMoviesPoster();
         progress = ProgressDialog.show(this, "Fetching Movies",
                 "Grab a Popcorn, We are fetching Movies for you.", true);
@@ -118,8 +170,9 @@ public class Home extends ActionBarActivity implements AdapterView.OnItemClickLi
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-        moviesMap = MoviesList.get(position);
+         moviesMap = moviesList.get(position);
 
+        //Reading Values from HashMap
          title = moviesMap.get(MovieConstants.MovieHashMapKeys.M_TITLE);
          description = moviesMap.get(MovieConstants.MovieHashMapKeys.M_DESCRIPTION);
          backdrop_path = moviesMap.get(MovieConstants.MovieHashMapKeys.M_BACKDROP_PATH);
@@ -127,7 +180,7 @@ public class Home extends ActionBarActivity implements AdapterView.OnItemClickLi
          total_votes = moviesMap.get(MovieConstants.MovieHashMapKeys.M_VOTES_COUNT);
          releasedate = moviesMap.get(MovieConstants.MovieHashMapKeys.M_RELEASE_DATE);
 
-
+        //Starting Intent
         Intent intent = new Intent(Home.this, MovieDetail.class);
         intent.putExtra("title", title);
         intent.putExtra("description", description);
@@ -138,6 +191,9 @@ public class Home extends ActionBarActivity implements AdapterView.OnItemClickLi
 
         startActivity(intent);
     }
+
+
+
 
     public class FetchMoviesPoster extends AsyncTask<String,String[],String[]>{
 
@@ -172,7 +228,6 @@ public class Home extends ActionBarActivity implements AdapterView.OnItemClickLi
                 movie_title = movie.getString(MovieConstants.TMDb.MJSN_TITLE);
                 description = movie.getString(MovieConstants.TMDb.MJSN_OVERVIEW);
                 poster_path = movie.getString(MovieConstants.TMDb.MJSN_POSTER_PATH);
-                //poster_path = MovieConstants.TMDb.IMAGE_BASE_URL+"342"+poster_path;
 
                 poster_path = "http://image.tmdb.org/t/p/w342/"+poster_path;
 
@@ -192,14 +247,14 @@ public class Home extends ActionBarActivity implements AdapterView.OnItemClickLi
                 movie_details.put(MovieConstants.MovieHashMapKeys.M_DESCRIPTION,description);
                 movie_details.put(MovieConstants.MovieHashMapKeys.M_POSTER_PATH,poster_path);
                 movie_details.put(MovieConstants.MovieHashMapKeys.M_BACKDROP_PATH,backdrop_path);
-                movie_details.put(MovieConstants.MovieHashMapKeys.M_AVG_VOTES,vote_average);
+                movie_details.put(MovieConstants.MovieHashMapKeys.M_AVG_VOTES, vote_average);
                 movie_details.put(MovieConstants.MovieHashMapKeys.M_VOTES_COUNT,vote_count);
                 movie_details.put(MovieConstants.MovieHashMapKeys.M_RELEASE_DATE,release_date);
 
 
 
                 // Adding to ArrayList
-                MoviesList.add(movie_details);
+                moviesList.add(movie_details);
 
                 //String Array of Poster
                 imagePosters[i] = poster_path;
@@ -253,7 +308,7 @@ public class Home extends ActionBarActivity implements AdapterView.OnItemClickLi
                     .appendQueryParameter(API_PARAM, MovieConstants.TMDb.API_KEY_MOVIEDB)
                     .appendQueryParameter(PAGE_PARAM, "1")
                     .build();
-           // Log.v(LOG_TAG, "Url " + builtUri);
+           Log.v(LOG_TAG, "Url " + builtUri);
 
 
             URL url = null;
@@ -328,6 +383,9 @@ public class Home extends ActionBarActivity implements AdapterView.OnItemClickLi
 
             progress.dismiss();
             if (result != null) {
+
+
+                postersArrayList = new ArrayList<String>(Arrays.asList(result));
 
                 mAdapter = new ImageAdapter(getBaseContext(),result);
                 mGridView.setAdapter(mAdapter);

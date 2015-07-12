@@ -34,6 +34,9 @@ public class MovieDetail extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_movie_detail);
 
+
+        //Initilaising the TextView/ImageView
+
         backDropImage = (ImageView) findViewById(R.id.backdropImageView);
         releaseDateTV = (TextView) findViewById(R.id.releaseDateTextView);
         descriptionTxtView = (TextView) findViewById(R.id.plotTextView);
@@ -60,16 +63,15 @@ public class MovieDetail extends ActionBarActivity {
 
             backdrop_path = "http://image.tmdb.org/t/p/w780/"+backdrop_path;
 
-            //Toast.makeText(getBaseContext(),backdrop_path,Toast.LENGTH_SHORT).show();
 
+            //Setting the Values from Intent
             Picasso.with(getBaseContext()).load(backdrop_path).into(backDropImage);
             releaseDateTV.setText(releasedate);
             descriptionTxtView.setText(description);
             titleTextView.setText(title);
             RatingTextView.setText(vote_avg);
 
-            //android.util.Log.v(LOG_TAG,"Url "+backdrop_path);
-
+            //Setting Title/Rating as Sub
             actionBarSetup(title, vote_avg);
 
 
