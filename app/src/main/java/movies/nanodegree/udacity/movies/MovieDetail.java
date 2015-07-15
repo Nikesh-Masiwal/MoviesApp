@@ -1,21 +1,21 @@
 package movies.nanodegree.udacity.movies;
 
 import android.annotation.TargetApi;
-import android.app.ActionBar;
 import android.content.Intent;
 import android.os.Build;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.support.v4.view.MenuItemCompat;
+import android.support.v7.app.ActionBarActivity;
+import android.support.v7.widget.ShareActionProvider;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ImageView;
-import android.widget.ShareActionProvider;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 
-import org.apache.commons.logging.Log;
+
 
 
 public class MovieDetail extends ActionBarActivity {
@@ -25,7 +25,10 @@ public class MovieDetail extends ActionBarActivity {
     ImageView backDropImage;
     TextView releaseDateTV,descriptionTxtView,titleTextView,RatingTextView;
 
+    private static final String FORECAST_SHARE_HASHTAG = " #MoviesApp";
 
+
+    ShareActionProvider mShareActionProvider;
 
     private final String LOG_TAG = Home.class.getSimpleName();
 
@@ -86,6 +89,57 @@ public class MovieDetail extends ActionBarActivity {
             ab.setTitle(title);
             ab.setSubtitle(rating);
         }
+    }
+
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+
+
+        getMenuInflater().inflate(R.menu.movie_detail, menu);
+
+        // Locate MenuItem with ShareActionProvider
+        MenuItem item = menu.findItem(R.id.action_share);
+// Fetch and store ShareActionProvider
+        mShareActionProvider = (ShareActionProvider) MenuItemCompat.getActionProvider(item);
+
+        // Attach an intent to this ShareActionProvider.  You can update this at any time,
+        // like when the user selects a new piece of data they might like to share.
+        if (mShareActionProvider != null ) {
+            mShareActionProvider.setShareIntent(createShareForecastIntent());
+        } else {
+            Log.d(LOG_TAG, "Share Action Provider is null?");
+        }
+
+        return super.onCreateOptionsMenu(menu);
+    }
+
+
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.action_share) {
+            Log.d(LOG_TAG, "Share Action Provider is null");
+
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    private Intent createShareForecastIntent() {
+        Intent shareIntent = new Intent(Intent.ACTION_SEND);
+        shareIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
+        shareIntent.setType("text/plain");
+        shareIntent.putExtra(Intent.EXTRA_TEXT,
+                "Check out "+title + FORECAST_SHARE_HASHTAG);
+        return shareIntent;
     }
     
 
