@@ -9,7 +9,6 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ImageView;
-import android.widget.RatingBar;
 import android.widget.ShareActionProvider;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -26,7 +25,7 @@ public class MovieDetail extends ActionBarActivity {
     ImageView backDropImage;
     TextView releaseDateTV,descriptionTxtView,titleTextView,RatingTextView;
 
-    RatingBar rate0;
+
 
     private final String LOG_TAG = Home.class.getSimpleName();
 
@@ -39,13 +38,10 @@ public class MovieDetail extends ActionBarActivity {
         //Initilaising the TextView/ImageView
 
         backDropImage = (ImageView) findViewById(R.id.backdropImageView);
-       // releaseDateTV = (TextView) findViewById(R.id.releaseDateTextView);
+        releaseDateTV = (TextView) findViewById(R.id.releaseDateTextView);
         descriptionTxtView = (TextView) findViewById(R.id.plotTextView);
         titleTextView = (TextView) findViewById(R.id.titleTextView);
-        //RatingTextView = (TextView) findViewById(R.id.RateTextView);
-
-        rate0 = (RatingBar) findViewById(R.id.rating_bar_0);
-
+        RatingTextView = (TextView) findViewById(R.id.RateTextView);
 
         Bundle intent = getIntent().getExtras();
 
@@ -70,15 +66,13 @@ public class MovieDetail extends ActionBarActivity {
 
             //Setting the Values from Intent
             Picasso.with(getBaseContext()).load(backdrop_path).into(backDropImage);
-            //releaseDateTV.setText(releasedate);
+            releaseDateTV.setText(releasedate);
             descriptionTxtView.setText(description);
             titleTextView.setText(title);
-           // RatingTextView.setText(vote_avg);
-
-            rate0.setRating(Float.parseFloat(vote_avg));
+            RatingTextView.setText(vote_avg);
 
             //Setting Title/Rating as Sub
-            //actionBarSetup(title, vote_avg);
+            actionBarSetup(title, vote_avg);
 
 
         }
