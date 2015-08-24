@@ -12,10 +12,11 @@ public class MovieConstants {
         public static final String POPULAR_MOVIE_BASE_URL = "http://api.themoviedb.org/3/movie/popular?";
         public static final String TOPRATED_MOVIE_BASE_URL = "http://api.themoviedb.org/3/movie/top_rated?";
         public static final String IMAGE_BASE_URL = "http://image.tmdb.org/t/p/";
-        protected static final String API_KEY_MOVIEDB = "59f4a7727c4d04f1e3138fd764cbe60e";
+        public static final String API_KEY_MOVIEDB = "59f4a7727c4d04f1e3138fd764cbe60e";
 
 
         // These are the names of the JSON objects that need to be extracted.
+        public final static String MJSN_ID = "id";
         public static final String MJSN_RESULT = "results";
         public static final String MJSN_ORGTITLE = "original_title";
         public static final String MJSN_OVERVIEW = "overview";
@@ -34,6 +35,7 @@ public class MovieConstants {
     public class MovieHashMapKeys {
 
         // These are keys for HashMap.
+        public final static String M_ID = "id";
         public static final String M_TITLE = "movie_title";
         public static final String M_DESCRIPTION = "movie_description";
         public static final String M_POSTER_PATH = "poster_path";
