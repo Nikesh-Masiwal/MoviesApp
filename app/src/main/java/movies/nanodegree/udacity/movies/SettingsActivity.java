@@ -173,6 +173,9 @@ public class SettingsActivity extends PreferenceActivity {
                 // For list preferences, look up the correct display value in
                 // the preference's 'entries' list.
 
+                Home home = new Home();
+                //home.setNeedARefresh(true);
+
                 Log.v("Home","Value Changed");
 
                 ListPreference listPreference = (ListPreference) preference;

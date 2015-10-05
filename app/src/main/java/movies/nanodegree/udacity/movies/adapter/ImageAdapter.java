@@ -9,6 +9,7 @@ import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 
+
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -20,6 +21,30 @@ import movies.nanodegree.udacity.movies.parcel.TMDbMovie;
  * Created by Nikesh-MBP on 05/07/15.
  */
 public class ImageAdapter extends ArrayAdapter<TMDbMovie> {
+    @Override
+    public int getCount() {
+        return super.getCount();
+    }
+
+    @Override
+    public TMDbMovie getItem(int position) {
+        return super.getItem(position);
+    }
+
+    @Override
+    public int getPosition(TMDbMovie item) {
+        return super.getPosition(item);
+    }
+
+    @Override
+    public long getItemId(int position) {
+        return super.getItemId(position);
+    }
+
+    @Override
+    public void notifyDataSetChanged() {
+        super.notifyDataSetChanged();
+    }
 
     private final String LOG_TAG = ImageAdapter.class.getSimpleName();
 
@@ -29,14 +54,21 @@ public class ImageAdapter extends ArrayAdapter<TMDbMovie> {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
+
+        Log.v(LOG_TAG,"Reached Here");
+
         if (convertView == null) {
-            convertView = LayoutInflater.from(getContext())
-                    .inflate(R.layout.list_item_gridview, parent, false);
+
+            LayoutInflater layoutInflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+
+            convertView = layoutInflater.inflate(R.layout.list_item_gridview, parent, false);
+
         }
         TMDbMovie movie = getItem(position);
         ImageView poster = (ImageView)convertView.findViewById(R.id.imageview_item);
         Picasso.with(getContext()).load(movie.getPosterW342()).into(poster);
-        return poster;
+        return convertView;
+
     }
 
     //    public ImageAdapter(Context context, String[] mobileValues) {

@@ -127,7 +127,7 @@ public class Home extends Fragment {
         imageAdapter.clear();
         imageAdapter.addAll(tmDbMovieArrayList);
 
-        Log.v("Home Fragemnt", "Added Adapter" + tmDbMovieArrayList.toString());
+       // Log.v("Home Fragemnt", "Added Adapter" + tmDbMovieArrayList.toString());
     }
 
     public class FetchMoviesPoster extends AsyncTask<String, Void, ArrayList<TMDbMovie>> {
