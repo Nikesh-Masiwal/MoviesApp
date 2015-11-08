@@ -1,0 +1,6 @@
+<fragment xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:id="@+id/item_list"
+    android:name="movies.nanodegree.udacity.movies.fragments.Home" android:layout_width="match_parent"
+    android:layout_height="match_parent" android:layout_marginLeft="0dp"
+    android:layout_marginRight="0dp" tools:context=".Home"
+    tools:layout="@android:layout/list_content" />

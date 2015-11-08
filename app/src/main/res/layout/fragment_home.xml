@@ -18,5 +18,21 @@
         android:padding="4dp"
         android:verticalSpacing="4dp" />
 
+    <FrameLayout
+        android:id="@+id/quiz_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".fragments.Home"
+        tools:ignore="MergeRootFrame">
+
+        <ProgressBar
+            android:id="@+id/progress"
+            android:layout_width="@dimen/progress_size"
+            android:layout_height="@dimen/progress_size"
+            android:layout_gravity="center"
+            android:indeterminateOnly="true" />
+
+    </FrameLayout>
+
 
 </RelativeLayout>

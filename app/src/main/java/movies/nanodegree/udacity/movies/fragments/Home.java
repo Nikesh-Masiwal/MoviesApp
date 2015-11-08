@@ -1,6 +1,7 @@
 package movies.nanodegree.udacity.movies.fragments;
 
 
+import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
@@ -14,6 +15,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.GridView;
+import android.widget.ListView;
+import android.widget.ProgressBar;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -38,16 +41,37 @@ import movies.nanodegree.udacity.movies.parcel.TMDbMovie;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class Home extends Fragment {
+public class Home extends android.support.v4.app.Fragment {
 
 
     private ImageAdapter imageAdapter;
     private ArrayList<TMDbMovie> tmDbMovieArrayList;
     private final static String PREF_MOVIES_INST = "pref_movies";
+    private Callbacks mCallbacks = sDummyCallbacks;
+
+    ProgressBar progress;
+
+    TMDbMovie movieTMDb;
+
 
     public Home() {
         // Required empty public constructor
     }
+
+    public interface Callbacks {
+        /**
+         * Callback for when an item has been selected.
+         */
+        public void onItemSelected(ArrayList<TMDbMovie> movie,int pos);
+    }
+
+    private static Callbacks sDummyCallbacks = new Callbacks() {
+        @Override
+        public void onItemSelected(ArrayList<TMDbMovie> movie,int pos) {
+        }
+    };
+
+
 
 
     @Override
@@ -56,6 +80,10 @@ public class Home extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_home, container, false);
         imageAdapter = new ImageAdapter(getActivity(), new ArrayList<TMDbMovie>());
         GridView movie = (GridView)rootView.findViewById(R.id.grid);
+
+        progress = (ProgressBar) rootView.findViewById(R.id.progress);
+        progress.setVisibility(View.GONE);
+
         movie.setAdapter(imageAdapter);
         movie.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -69,12 +97,26 @@ public class Home extends Fragment {
                 intent.putExtra("vote_avg", imageAdapter.getItem(position).getRate());
                 intent.putExtra("total_votes", imageAdapter.getItem(position).getRateForRatingBar());
                 intent.putExtra("releasedate", imageAdapter.getItem(position).getDuration());
-                startActivity(intent);
+                mCallbacks.onItemSelected(tmDbMovieArrayList,position);
+                //  startActivity(intent);
             }
         });
 
 
         return rootView;
+    }
+
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+
+        // Activities containing this fragment must implement its callbacks.
+        if (!(activity instanceof Callbacks)) {
+            throw new IllegalStateException("Activity must implement fragment's callbacks.");
+        }
+
+        mCallbacks = (Callbacks) activity;
     }
 
     @Override
@@ -88,7 +130,7 @@ public class Home extends Fragment {
             String populated_movie_by = prefs.getString(getString(R.string.pref_sorting_key),
                     getString(R.string.sort_default));
 
-
+            progress.setVisibility(View.VISIBLE);
             FetchMoviesPoster moviesTask = new FetchMoviesPoster();
             moviesTask.execute(populated_movie_by);
 
@@ -106,9 +148,9 @@ public class Home extends Fragment {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
         String populated_movie_by = prefs.getString(getString(R.string.pref_sorting_key),
                 getString(R.string.sort_default));
-
-//            FetchMoviesPoster moviesTask = new FetchMoviesPoster();
-//            moviesTask.execute(populated_movie_by);
+        progress.setVisibility(View.VISIBLE);
+            FetchMoviesPoster moviesTask = new FetchMoviesPoster();
+            moviesTask.execute(populated_movie_by);
 
 
 
@@ -122,7 +164,7 @@ public class Home extends Fragment {
 
     private void setPosterAdapter() {
 
-        Log.v("Home Fragemnt","Setting Adapter");
+        progress.setVisibility(View.GONE);
 
         imageAdapter.clear();
         imageAdapter.addAll(tmDbMovieArrayList);
@@ -184,6 +226,8 @@ public class Home extends Fragment {
 
 
         }
+
+
 
 
         @Override

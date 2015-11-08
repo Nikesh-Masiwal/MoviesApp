@@ -14,6 +14,10 @@ public class MovieConstants {
         public static final String IMAGE_BASE_URL = "http://image.tmdb.org/t/p/";
         public static final String API_KEY_MOVIEDB = "59f4a7727c4d04f1e3138fd764cbe60e";
 
+        //public static final String FONT_BOLD_PATH = "fonts/Sintony-Bold.ttf";
+        public static final String FONT_BOLD_PATH = "fonts/Megrim.ttf";
+        public static final String FONT_REGULAR_PATH = "fonts/Sintony-Regular.ttf";
+
 
         // These are the names of the JSON objects that need to be extracted.
         public final static String MJSN_ID = "id";

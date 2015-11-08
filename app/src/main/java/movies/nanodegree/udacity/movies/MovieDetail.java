@@ -35,53 +35,22 @@ public class MovieDetail extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_movie_detail);
 
-
-        //Initilaising the TextView/ImageView
-
-        backDropImage = (ImageView) findViewById(R.id.backdropImageView);
-       // releaseDateTV = (TextView) findViewById(R.id.releaseDateTextView);
-        descriptionTxtView = (TextView) findViewById(R.id.plotTextView);
-        titleTextView = (TextView) findViewById(R.id.titleTextView);
-        //RatingTextView = (TextView) findViewById(R.id.RateTextView);
-
-        rate0 = (RatingBar) findViewById(R.id.rating_bar_0);
-
-
-        Bundle intent = getIntent().getExtras();
-
-        if (intent != null) {
-
-            title = intent.getString("title");
-            description = intent.getString("description");
-            backdrop_path = intent.getString("backdrop_path");
-            //vote_avg = intent.getString("vote_avg");
-            total_votes = intent.getString("total_votes");
-            releasedate = intent.getString("releasedate");
-
-            /*
-             Backdrop size
-             "w300",
-              "w780",
-              "w1280",
-             */
-
-            backdrop_path = "http://image.tmdb.org/t/p/w780/"+backdrop_path;
-
-
-            //Setting the Values from Intent
-            Picasso.with(getBaseContext()).load(backdrop_path).into(backDropImage);
-            //releaseDateTV.setText(releasedate);
-            descriptionTxtView.setText(description);
-            titleTextView.setText(title);
-           // RatingTextView.setText(vote_avg);
-
-           // rate0.setRating(Float.parseFloat(vote_avg));
-
-            //Setting Title/Rating as Sub
-            //actionBarSetup(title, vote_avg);
-
-
+        if (savedInstanceState == null) {
+            // Create the detail fragment and add it to the activity
+            // using a fragment transaction.
+            Bundle arguments = new Bundle();
+            arguments.putParcelable(movies.nanodegree.udacity.movies.fragments.MovieDetail.ARG_ITEM_ID,
+                    getIntent().getParcelableExtra(movies.nanodegree.udacity.movies.fragments.MovieDetail.ARG_ITEM_ID));
+            movies.nanodegree.udacity.movies.fragments.MovieDetail fragment = new movies.nanodegree.udacity.movies.fragments.MovieDetail();
+            fragment.setArguments(arguments);
+            getSupportFragmentManager().beginTransaction()
+                    .add(R.id.title_frame, fragment)
+                    .commit();
         }
+        // Show the Up button in the action bar.
+        //getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+
 
 
     }

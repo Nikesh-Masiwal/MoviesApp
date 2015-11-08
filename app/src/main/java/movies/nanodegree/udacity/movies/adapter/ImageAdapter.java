@@ -1,6 +1,7 @@
 package movies.nanodegree.udacity.movies.adapter;
 
 import android.content.Context;
+import android.graphics.Typeface;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -8,12 +9,14 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
+import movies.nanodegree.udacity.movies.MovieConstants;
 import movies.nanodegree.udacity.movies.R;
 import movies.nanodegree.udacity.movies.parcel.TMDbMovie;
 
@@ -64,9 +67,23 @@ public class ImageAdapter extends ArrayAdapter<TMDbMovie> {
             convertView = layoutInflater.inflate(R.layout.list_item_gridview, parent, false);
 
         }
+        Typeface custom_font_header,custom_font_body;
+
+        custom_font_header = Typeface.createFromAsset(convertView.getContext().getAssets(), MovieConstants.TMDb.FONT_BOLD_PATH);
+
+
         TMDbMovie movie = getItem(position);
         ImageView poster = (ImageView)convertView.findViewById(R.id.imageview_item);
+        TextView movieTitle = (TextView) convertView.findViewById(R.id.movie_title);
+        TextView movie_rating = (TextView) convertView.findViewById(R.id.movie_rating);
+
         Picasso.with(getContext()).load(movie.getPosterW342()).into(poster);
+        movieTitle.setText(movie.getTitle());
+        movieTitle.setTypeface(custom_font_header);
+
+        movie_rating.setText(movie.getRateForRatingBar());
+        movie_rating.setTypeface(custom_font_header);
+
         return convertView;
 
     }

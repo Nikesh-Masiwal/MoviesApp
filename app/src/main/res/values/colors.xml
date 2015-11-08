@@ -26,4 +26,10 @@
   <color name="body_text_2">#8a000000</color>
   <color name="body_text_3">#60000000</color>
 
+  <color name="colorPrimary">#673AB7</color>
+  <color name="colorPrimaryDark">#512DA8</color>
+  <color name="colorAccent">#FF4081</color>
+
+
+
 </resources>
