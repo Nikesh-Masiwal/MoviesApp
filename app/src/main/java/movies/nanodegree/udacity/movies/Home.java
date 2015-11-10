@@ -59,21 +59,14 @@ public class Home extends ActionBarActivity implements movies.nanodegree.udacity
         setSupportActionBar(toolbar);
         toolbar.setTitle(getTitle());
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
+
 
         if (findViewById(R.id.item_detail_container) != null) {
             // The detail container view will be present only in the
             // large-screen layouts (res/values-large and
             // res/values-sw600dp). If this view is present, then the
             // activity should be in two-pane mode.
-            Toast.makeText(getBaseContext(),"Two Pane",Toast.LENGTH_SHORT).show();
+
             mTwoPane = true;
 
 
@@ -81,7 +74,7 @@ public class Home extends ActionBarActivity implements movies.nanodegree.udacity
 
 
         }else{
-            Toast.makeText(getBaseContext(),"False",Toast.LENGTH_SHORT).show();
+
         }
 
 
@@ -123,7 +116,7 @@ public class Home extends ActionBarActivity implements movies.nanodegree.udacity
         } else {
             // In single-pane mode, simply start the detail activity
             // for the selected item ID.
-            Toast.makeText(getBaseContext(),"False , Detail"+movie.get(position).getTitle(),Toast.LENGTH_SHORT).show();
+
             Intent detailIntent = new Intent(this, movies.nanodegree.udacity.movies.MovieDetail.class);
 
             detailIntent.putExtra(MovieDetail.ARG_ITEM_ID,movie.get(position));

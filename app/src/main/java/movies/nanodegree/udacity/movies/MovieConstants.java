@@ -23,7 +23,9 @@ public class MovieConstants {
 
 
         public static final String IMAGE_BASE_URL = "http://image.tmdb.org/t/p/";
-        public static final String API_KEY_MOVIEDB = "59f4a7727c4d04f1e3138fd764cbe60e";
+
+        // INSERT KEY HERE
+        public static final String API_KEY_MOVIEDB = "";
 
         //public static final String FONT_BOLD_PATH = "fonts/Sintony-Bold.ttf";
         public static final String FONT_BOLD_PATH = "fonts/Megrim.ttf";
@@ -42,6 +44,9 @@ public class MovieConstants {
         public static final String MJSN_RELEASE_DATE = "release_date";
         public static final String MJSN_BACKDROP_PATH = "backdrop_path";
 
+
+        public static final String FAVOURITE_SET = "pref_movieID";
+        public static final String FAVOURITE_MOVIE = "favourite_movie";
 
 
 
