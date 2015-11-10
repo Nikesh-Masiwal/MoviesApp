@@ -58,8 +58,6 @@ public class ImageAdapter extends ArrayAdapter<TMDbMovie> {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
 
-        Log.v(LOG_TAG,"Reached Here");
-
         if (convertView == null) {
 
             LayoutInflater layoutInflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);

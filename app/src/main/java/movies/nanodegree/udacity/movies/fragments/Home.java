@@ -13,10 +13,16 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.Toast;
+
+import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.Response;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -37,6 +43,7 @@ import movies.nanodegree.udacity.movies.MovieDetail;
 import movies.nanodegree.udacity.movies.R;
 import movies.nanodegree.udacity.movies.adapter.ImageAdapter;
 import movies.nanodegree.udacity.movies.parcel.TMDbMovie;
+import movies.nanodegree.udacity.movies.utils.EndlessRecyclerOnScrollListener;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -44,14 +51,22 @@ import movies.nanodegree.udacity.movies.parcel.TMDbMovie;
 public class Home extends android.support.v4.app.Fragment {
 
 
+    private static final String LOG_TAG = Home.class.getSimpleName();
     private ImageAdapter imageAdapter;
-    private ArrayList<TMDbMovie> tmDbMovieArrayList;
+    private ArrayList<TMDbMovie> tmDbMovieArrayList = new ArrayList<>();
     private final static String PREF_MOVIES_INST = "pref_movies";
     private Callbacks mCallbacks = sDummyCallbacks;
 
     ProgressBar progress;
 
     TMDbMovie movieTMDb;
+
+    OkHttpClient client = new OkHttpClient();
+
+    private final int current_page = 1;
+    private boolean alreadyLoaded = false;
+
+    private String currentSortOrder;
 
 
     public Home() {
@@ -71,6 +86,8 @@ public class Home extends android.support.v4.app.Fragment {
         }
     };
 
+    GridView movie;
+
 
 
 
@@ -79,7 +96,7 @@ public class Home extends android.support.v4.app.Fragment {
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_home, container, false);
         imageAdapter = new ImageAdapter(getActivity(), new ArrayList<TMDbMovie>());
-        GridView movie = (GridView)rootView.findViewById(R.id.grid);
+        movie = (GridView)rootView.findViewById(R.id.grid);
 
         progress = (ProgressBar) rootView.findViewById(R.id.progress);
         progress.setVisibility(View.GONE);
@@ -97,10 +114,33 @@ public class Home extends android.support.v4.app.Fragment {
                 intent.putExtra("vote_avg", imageAdapter.getItem(position).getRate());
                 intent.putExtra("total_votes", imageAdapter.getItem(position).getRateForRatingBar());
                 intent.putExtra("releasedate", imageAdapter.getItem(position).getDuration());
-                mCallbacks.onItemSelected(tmDbMovieArrayList,position);
+                mCallbacks.onItemSelected(tmDbMovieArrayList, position);
                 //  startActivity(intent);
             }
         });
+
+        movie.setOnScrollListener(new EndlessRecyclerOnScrollListener() {
+
+            @Override
+            public void onLoadMore(int current_page) {
+                Log.d(LOG_TAG, "onLoadMore " + current_page);
+
+                SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
+                String populated_movie_by = prefs.getString(getString(R.string.pref_sorting_key),
+                        getString(R.string.sort_default));
+
+                progress.setVisibility(View.VISIBLE);
+                FetchMoviesPoster moviesTask = new FetchMoviesPoster();
+                moviesTask.execute(populated_movie_by, String.valueOf(current_page));
+
+            }
+        });
+
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        String populated_movie_by = prefs.getString(getString(R.string.pref_sorting_key),
+                getString(R.string.sort_default));
+
+        currentSortOrder = populated_movie_by;
 
 
         return rootView;
@@ -126,17 +166,17 @@ public class Home extends android.support.v4.app.Fragment {
 
         if(savedInstanceState == null || !savedInstanceState.containsKey(PREF_MOVIES_INST)) {
 
-            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
-            String populated_movie_by = prefs.getString(getString(R.string.pref_sorting_key),
-                    getString(R.string.sort_default));
 
-            progress.setVisibility(View.VISIBLE);
-            FetchMoviesPoster moviesTask = new FetchMoviesPoster();
-            moviesTask.execute(populated_movie_by);
+            if (tmDbMovieArrayList.size() == 0) {
+                progress.setVisibility(View.VISIBLE);
+                alreadyLoaded = true;
+                FetchMoviesPoster moviesTask = new FetchMoviesPoster();
+                moviesTask.execute(currentSortOrder, String.valueOf(current_page));
+            }
 
         } else {
             tmDbMovieArrayList = savedInstanceState.getParcelableArrayList(PREF_MOVIES_INST);
-            setPosterAdapter();
+            setPosterAdapter(tmDbMovieArrayList);
         }
 
     }
@@ -146,11 +186,39 @@ public class Home extends android.support.v4.app.Fragment {
         super.onResume();
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
-        String populated_movie_by = prefs.getString(getString(R.string.pref_sorting_key),
+        String populated_movie_by_resume = prefs.getString(getString(R.string.pref_sorting_key),
                 getString(R.string.sort_default));
-        progress.setVisibility(View.VISIBLE);
+
+
+
+        if (currentSortOrder != populated_movie_by_resume){
+
+            Toast.makeText(getActivity(),"Sort Order Changed",Toast.LENGTH_SHORT).show();
+            tmDbMovieArrayList.clear();
+            imageAdapter.clear();
+
+            movie.setOnScrollListener(new EndlessRecyclerOnScrollListener() {
+
+                @Override
+                public void onLoadMore(int current_page) {
+                    Log.d(LOG_TAG, "onLoadMore " + current_page);
+
+                    SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
+                    String populated_movie_by = prefs.getString(getString(R.string.pref_sorting_key),
+                            getString(R.string.sort_default));
+
+                    progress.setVisibility(View.VISIBLE);
+                    FetchMoviesPoster moviesTask = new FetchMoviesPoster();
+                    moviesTask.execute(populated_movie_by, String.valueOf(current_page));
+
+                }
+            });
+
+            progress.setVisibility(View.VISIBLE);
             FetchMoviesPoster moviesTask = new FetchMoviesPoster();
-            moviesTask.execute(populated_movie_by);
+            moviesTask.execute(populated_movie_by_resume, String.valueOf(current_page));
+            currentSortOrder = populated_movie_by_resume;
+        }
 
 
 
@@ -162,12 +230,16 @@ public class Home extends android.support.v4.app.Fragment {
         super.onSaveInstanceState(outState);
     }
 
-    private void setPosterAdapter() {
+    private void setPosterAdapter(ArrayList<TMDbMovie> movies) {
+
+
+
 
         progress.setVisibility(View.GONE);
+        Log.v(LOG_TAG, "Setting Adapter " + movies.size());
 
-        imageAdapter.clear();
-        imageAdapter.addAll(tmDbMovieArrayList);
+        imageAdapter.addAll(movies);
+        this.imageAdapter.notifyDataSetChanged();
 
        // Log.v("Home Fragemnt", "Added Adapter" + tmDbMovieArrayList.toString());
     }
@@ -216,14 +288,16 @@ public class Home extends android.support.v4.app.Fragment {
 
                 release_date = movie.getString(MovieConstants.TMDb.MJSN_RELEASE_DATE);
 
-                Log.v(LOG_TAG,"Movies "+vote_count+" Backdrop"+backdrop_path);
 
                 TMDbMovie TMDbmovie = new TMDbMovie(mid, poster_path, movie_title, release_date, vote_average, description,
                         vote_count,backdrop_path);
+
+
                 movies.add(TMDbmovie);
+                tmDbMovieArrayList.add(TMDbmovie);
 
             }
-
+            Log.v(LOG_TAG,"Page "+current_page);
             return movies;
 
 
@@ -267,73 +341,20 @@ public class Home extends android.support.v4.app.Fragment {
             final String API_PARAM = "api_key";
             final String PAGE_PARAM = "page";
 
+            String page_instance = params[1];
+
             Uri builtUri = Uri.parse(BASE_URL_TO_POPULATE_BY).buildUpon()
                     .appendQueryParameter(API_PARAM, MovieConstants.TMDb.API_KEY_MOVIEDB)
-                    .appendQueryParameter(PAGE_PARAM, "1")
+                    .appendQueryParameter(PAGE_PARAM, page_instance)
                     .build();
             Log.v(LOG_TAG, "Url " + builtUri);
 
-
-            URL url = null;
+            String response = null;
             try {
-                url = new URL(builtUri.toString());
-            } catch (MalformedURLException e) {
-                e.printStackTrace();
-            }
-
-            // Create the request to TMDb, and open the connection
-            try {
-                urlConnection = (HttpURLConnection) url.openConnection();
+                response = run(builtUri.toString());
+                return getMoviesDataFromJson(response);
             } catch (IOException e) {
                 e.printStackTrace();
-            }
-            try {
-                urlConnection.setRequestMethod("GET");
-            } catch (ProtocolException e) {
-                e.printStackTrace();
-            }
-            try {
-                urlConnection.connect();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-            // Read the input stream into a String
-            InputStream inputStream = null;
-            try {
-                inputStream = urlConnection.getInputStream();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            StringBuffer buffer = new StringBuffer();
-            if (inputStream == null) {
-                // Nothing to do.
-                return null;
-            }
-            reader = new BufferedReader(new InputStreamReader(inputStream));
-
-            String line;
-            try {
-                while ((line = reader.readLine()) != null) {
-                    // Since it's JSON, adding a newline isn't necessary (it won't affect parsing)
-                    // But it does make debugging a *lot* easier if you print out the completed
-                    // buffer for debugging.
-                    buffer.append(line).append("\n");
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-            if (buffer.length() == 0) {
-                // Stream was empty.  No point in parsing.
-                return null;
-            }
-            moviesJsonStr = buffer.toString();
-
-
-
-            try {
-                return getMoviesDataFromJson(moviesJsonStr);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -345,11 +366,18 @@ public class Home extends android.support.v4.app.Fragment {
         @Override
         protected void onPostExecute(ArrayList<TMDbMovie> movies) {
 
-
-            tmDbMovieArrayList = movies;
-            setPosterAdapter();
+            setPosterAdapter(movies);
 
         }
+    }
+
+    String run(String url) throws IOException {
+        Request request = new Request.Builder()
+                .url(url)
+                .build();
+
+        Response response = client.newCall(request).execute();
+        return response.body().string();
     }
 
 

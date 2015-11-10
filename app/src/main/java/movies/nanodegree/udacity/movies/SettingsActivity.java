@@ -2,6 +2,7 @@ package movies.nanodegree.udacity.movies;
 
 import android.annotation.TargetApi;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
@@ -177,6 +178,9 @@ public class SettingsActivity extends PreferenceActivity {
                 //home.setNeedARefresh(true);
 
                 Log.v("Home","Value Changed");
+
+
+
 
                 ListPreference listPreference = (ListPreference) preference;
                 int index = listPreference.findIndexOfValue(stringValue);
