@@ -1,127 +1,334 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ Copyright (C) 2015 The Android Open Source Project
-  ~
-  ~ Licensed under the Apache License, Version 2.0 (the "License");
-  ~ you may not use this file except in compliance with the License.
-  ~ You may obtain a copy of the License at
-  ~
-  ~      http://www.apache.org/licenses/LICENSE-2.0
-  ~
-  ~ Unless required by applicable law or agreed to in writing, software
-  ~ distributed under the License is distributed on an "AS IS" BASIS,
-  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  ~ See the License for the specific language governing permissions and
-  ~ limitations under the License.
--->
+  Copyright 2014 Google Inc. All rights reserved.
 
-<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/main_content"
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+  -->
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:iosched="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fitsSystemWindows="true">
+    >
 
-    <android.support.design.widget.AppBarLayout
-        android:id="@+id/appbar"
+
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="@dimen/detail_backdrop_height"
-        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-        android:fitsSystemWindows="true">
+        android:layout_height="256dp"
 
-        <android.support.design.widget.CollapsingToolbarLayout
-            android:id="@+id/collapsing_toolbar"
+        android:background="?colorPrimary">
+
+
+
+        <ImageView
+            android:id="@+id/backdropImageView"
+            android:src="@drawable/poster_example"
+            android:scaleType="centerCrop"
+            android:fitsSystemWindows="true"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            app:layout_scrollFlags="scroll|exitUntilCollapsed"
-            android:fitsSystemWindows="true"
-            app:contentScrim="?attr/colorPrimary"
-            app:expandedTitleMarginStart="48dp"
-            app:expandedTitleMarginEnd="64dp">
+            />
 
-            <ImageView
-                android:id="@+id/backdropImageView"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:scaleType="centerCrop"
-                android:fitsSystemWindows="true"
-                app:layout_collapseMode="parallax" />
+    </FrameLayout>
 
-            <android.support.v7.widget.Toolbar
-                android:id="@+id/toolbar"
-                android:layout_width="match_parent"
-                android:layout_height="?attr/actionBarSize"
-                app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
-                app:layout_collapseMode="pin" />
-
-        </android.support.design.widget.CollapsingToolbarLayout>
-
-    </android.support.design.widget.AppBarLayout>
-
-    <android.support.v4.widget.NestedScrollView
-        android:id="@+id/item_detail_container"
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+        android:paddingTop="200dp"
+        android:paddingBottom="16dp"
+        android:clipToPadding="false"
+        android:scrollbarStyle="insideOverlay">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical"
-            android:paddingTop="24dp">
+            >
+
+
+
 
 
             <android.support.v7.widget.CardView
+
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/card_margin"
-                android:layout_marginLeft="@dimen/card_margin"
-                android:layout_marginRight="@dimen/card_margin">
+                android:layout_gravity="center_horizontal"
+                android:layout_marginStart="@dimen/card_margin"
+                android:layout_marginEnd="@dimen/card_margin"
+                android:paddingTop="@dimen/fab_margin"
+                iosched:cardBackgroundColor="#fff"
+                iosched:cardCornerRadius="@dimen/cardview_default_elevation"
+                iosched:cardElevation="@dimen/cardview_default_elevation"
+                iosched:cardPreventCornerOverlap="false">
+
+
+                <RelativeLayout
+
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+
+                    >
+
+                <RelativeLayout
+
+                    android:layout_width="match_parent"
+                    android:layout_height="200dp"
+                    android:id="@+id/layoutTop"
+                    >
+
+
+
+                    <ImageView
+                        android:id="@+id/backdrop"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/poster_example"
+                        />
+
+
+
+
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/layoutBottom"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/layoutTop" >
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:weightSum="2"
+
+                        >
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_weight="1.5"
+                            android:layout_height="wrap_content">
+
+
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:orientation="vertical"
+                            android:layout_weight="0.5"
+                            android:layout_height="wrap_content">
+
+                            <TextView
+                                android:id="@+id/titleTextView"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+
+                                android:layout_marginLeft="25dp"
+                                android:layout_marginTop="8dp"
+                                android:textAppearance="?android:attr/textAppearanceMedium"
+                                android:textColor="?android:attr/textColorPrimary"
+                                tools:text="Jurasic World"
+                                android:textStyle="bold"
+                                android:textSize="18sp"
+                                />
+
+
+                            <TextView
+                                android:id="@+id/releaseDateTxtView"
+                                android:textAppearance="@style/TextAppearance.AppCompat.Caption"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                tools:text="2015-7-11"
+                                android:textSize="16sp"
+                                android:layout_marginTop="8dp"
+                                android:layout_marginLeft="25dp"
+                                android:layout_gravity="left|center_vertical"
+
+                                />
+
+
+
+
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+
+                </RelativeLayout>
+
+                    <ImageView
+                        android:id="@+id/imagePoster"
+                        android:layout_width="100dp"
+                        android:layout_height="100dp"
+                        android:layout_above="@id/layoutBottom"
+                        android:layout_alignParentLeft="true"
+                        android:layout_marginLeft="15dp"
+                        android:layout_marginBottom="-40dp"
+                        android:adjustViewBounds="true"
+                        android:src="@drawable/poster_example" />
+
+
+            </RelativeLayout>
+
+            </android.support.v7.widget.CardView>
+
+            <android.support.v7.widget.CardView
+                android:id="@+id/ratecard"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginStart="@dimen/card_margin"
+                android:layout_marginEnd="@dimen/card_margin"
+                android:paddingTop="@dimen/fab_margin"
+                iosched:cardBackgroundColor="#fff"
+                iosched:cardCornerRadius="@dimen/cardview_default_elevation"
+                iosched:cardElevation="@dimen/cardview_default_elevation"
+                iosched:cardPreventCornerOverlap="false">
 
                 <LinearLayout
                     style="@style/Widget.CardContent"
+
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
 
                     <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="Rating"
-                        android:textAppearance="@style/TextAppearance.AppCompat.Title" />
-
-                    <RelativeLayout
+                        android:textAppearance="@style/TextAppearance.AppCompat.Title"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="center_horizontal">
+                        android:text="Rating"
+                        android:layout_gravity="center"
 
+                        />
 
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        >
+
+                        <TextView
+                            android:id="@+id/rating_average_txtView"
+                            android:textAppearance="@style/TextAppearance.AppCompat.Title"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            tools:text="4.7"
+                            android:textSize="48sp"
+                            android:layout_gravity="center"
+
+                            />
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            >
                         <RatingBar
                             style="@style/FeedbackRatingBar"
                             android:id="@+id/rating_bar_0"
+                            android:layout_width="match_parent"
+                            android:layout_marginLeft="10dp"
+                            android:layout_marginTop="8dp"
                             android:isIndicator="true"
+                            android:layout_gravity="center"
                             android:rating="4"
 
                             />
 
-                        <TextView
-                            style="@style/FeedbackQuestionGuideText"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_below="@id/rating_bar_0"
-                            android:layout_alignLeft="@id/rating_bar_0"
-                            android:text="Not so Good" />
+                 <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                >
 
-                        <TextView
-                            style="@style/FeedbackQuestionGuideText"
-                            android:layout_below="@id/rating_bar_0"
-                            android:layout_alignRight="@id/rating_bar_0"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Great" />
-                    </RelativeLayout>
+                    <TextView
+                        android:id="@+id/num_of_votes_txtView"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Caption"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        tools:text="2045 votes"
+                        android:textSize="16sp"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginLeft="15dp"
+                        android:layout_gravity="left|center_vertical"
+
+                        />
+
+
+
+
+                  </LinearLayout>
+
+
+                    </LinearLayout>
+
+
+
+                    </LinearLayout>
+
+
+
 
 
                 </LinearLayout>
+
+
+            </android.support.v7.widget.CardView>
+
+
+
+            <android.support.v7.widget.CardView
+                android:id="@+id/content_card"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginStart="@dimen/card_margin"
+                android:layout_marginEnd="@dimen/card_margin"
+                android:paddingTop="@dimen/fab_margin"
+                iosched:cardBackgroundColor="#fff"
+                iosched:cardCornerRadius="@dimen/cardview_default_elevation"
+                iosched:cardElevation="@dimen/cardview_default_elevation"
+                iosched:cardPreventCornerOverlap="false">
+
+                <LinearLayout
+                    style="@style/Widget.CardContent"
+
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:textAppearance="@style/TextAppearance.AppCompat.Title"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/overview_description_string"
+                        android:layout_gravity="center"
+
+                        />
+
+
+                    <TextView
+                        android:id="@+id/plotTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+
+                        />
+
+
+                    </LinearLayout>
+
 
             </android.support.v7.widget.CardView>
 
@@ -132,23 +339,91 @@
 
                 <LinearLayout
                     style="@style/Widget.CardContent"
+
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
 
 
-                    <TextView
+                    <LinearLayout
+                        android:id="@+id/movie_details_videos_container"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:id="@+id/titleTextView"
-                        android:text="Info"
-                        android:textAppearance="@style/TextAppearance.AppCompat.Title" />
+                        android:orientation="vertical"
+                        android:layout_marginTop="16dp"
+                        >
 
-                    <TextView
+                        <TextView
+                            android:id="@+id/movie_details_videos_heading"
+                            style="@style/movie_details_section_heading"
+                            android:text="Videos"
+                            />
+
+                        <FrameLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="220dp"
+                            android:background="#FFF"
+                            android:layout_marginTop="8dp"
+                            >
+
+                            <android.support.v7.widget.RecyclerView
+                                android:id="@+id/movie_details_videos_recycler_view"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                />
+
+                        </FrameLayout>
+
+                    </LinearLayout>
+
+
+                </LinearLayout>
+
+            </android.support.v7.widget.CardView>
+
+
+            <android.support.v7.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/card_margin">
+
+                <LinearLayout
+                    style="@style/Widget.CardContent"
+
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+
+                    <LinearLayout
+                        android:id="@+id/movie_details_reviews_container"
                         android:layout_width="match_parent"
-                        android:id="@+id/plotTextView"
-                        android:textSize="18sp"
                         android:layout_height="wrap_content"
-                        />
+                        android:orientation="vertical"
+                        android:layout_marginTop="16dp"
+                        >
+
+                        <TextView
+                            android:id="@+id/movie_details_reviews_heading"
+                            style="@style/movie_details_section_heading"
+                            android:text="Reviews"
+                            />
+
+                        <FrameLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="220dp"
+                            android:background="#FFF"
+                            android:layout_marginTop="8dp"
+                            >
+
+                            <android.support.v7.widget.RecyclerView
+                                android:id="@+id/movie_details_reviews_recycler_view"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                />
+
+                        </FrameLayout>
+
+                    </LinearLayout>
+
 
                 </LinearLayout>
 
@@ -158,15 +433,13 @@
 
         </LinearLayout>
 
-    </android.support.v4.widget.NestedScrollView>
 
-    <android.support.design.widget.FloatingActionButton
-        android:layout_height="wrap_content"
-        android:layout_width="wrap_content"
-        app:layout_anchor="@id/appbar"
-        app:layout_anchorGravity="bottom|right|end"
-        android:src="@drawable/ic_action_heart_blank"
-        android:layout_margin="@dimen/fab_margin"
-        android:clickable="true"/>
 
-</android.support.design.widget.CoordinatorLayout>
+    </ScrollView>
+
+    <!-- Button bar -->
+    <!-- need two layouts in order to restrict the width on larger devices -->
+
+
+
+</FrameLayout>

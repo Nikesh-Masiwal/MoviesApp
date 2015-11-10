@@ -9,8 +9,19 @@ public class MovieConstants {
 
         //Constants for Movie Database API
 
-        public static final String POPULAR_MOVIE_BASE_URL = "http://api.themoviedb.org/3/movie/popular?";
-        public static final String TOPRATED_MOVIE_BASE_URL = "http://api.themoviedb.org/3/movie/top_rated?";
+        public static final String BASE_TMDB_URL = "http://api.themoviedb.org/3";
+        public static final String BASE_MOVIE_ENDPOINT = "/movie";
+        public static final String BASE_API_MOVIE_ENDPOINT = BASE_TMDB_URL+BASE_MOVIE_ENDPOINT;
+
+        public static final String POPULAR_MOVIE_BASE_URL = BASE_API_MOVIE_ENDPOINT+"/popular?";
+        public static final String TOPRATED_MOVIE_BASE_URL = BASE_API_MOVIE_ENDPOINT+"/top_rated?";
+
+        public static final String VIDEOS_RELATED_TO_MOVIE = "/videos?";
+
+        public static final String REVIEWS_RELATED_TO_MOVIE = "/reviews?";
+
+
+
         public static final String IMAGE_BASE_URL = "http://image.tmdb.org/t/p/";
         public static final String API_KEY_MOVIEDB = "59f4a7727c4d04f1e3138fd764cbe60e";
 

@@ -207,17 +207,19 @@ public class Home extends android.support.v4.app.Fragment {
                 description = movie.getString(MovieConstants.TMDb.MJSN_OVERVIEW);
                 poster_path = movie.getString(MovieConstants.TMDb.MJSN_POSTER_PATH);
 
-                poster_path = "http://image.tmdb.org/t/p/w342/"+poster_path;
-
                 backdrop_path = movie.getString(MovieConstants.TMDb.MJSN_BACKDROP_PATH);
+
+
                 vote_count = movie.getString(MovieConstants.TMDb.MJSN_VOTE_COUNT);
 
                 vote_average = movie.getString(MovieConstants.TMDb.MJSN_VOTE_RATE);
 
                 release_date = movie.getString(MovieConstants.TMDb.MJSN_RELEASE_DATE);
 
+                Log.v(LOG_TAG,"Movies "+vote_count+" Backdrop"+backdrop_path);
+
                 TMDbMovie TMDbmovie = new TMDbMovie(mid, poster_path, movie_title, release_date, vote_average, description,
-                        vote_count);
+                        vote_count,backdrop_path);
                 movies.add(TMDbmovie);
 
             }
@@ -328,7 +330,7 @@ public class Home extends android.support.v4.app.Fragment {
             }
             moviesJsonStr = buffer.toString();
 
-            Log.v(LOG_TAG,"Movies "+moviesJsonStr);
+
 
             try {
                 return getMoviesDataFromJson(moviesJsonStr);
